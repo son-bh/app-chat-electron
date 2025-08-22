@@ -32,7 +32,7 @@ function createWindow() {
     const indexPath = path.join(__dirname, "../dist/index.html");
     console.log("Loading production file:", indexPath);
     mainWindow
-      .loadFile(`file://${indexPath}`)
+      .loadFile(indexPath)
       .catch((err) => console.error("Failed to load prod file:", err));
   }
 
