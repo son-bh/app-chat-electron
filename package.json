@@ -26,6 +26,7 @@
     "productName": "MyChatApp",
     "files": [
       "dist/**/*",
+      "dist/locales/**/*",
       "electron/**/*",
       "node_modules/**/*",
       "package.json"
