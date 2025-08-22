@@ -1,0 +1,4 @@
+{
+  "hello_world": "مرحباً بالعالم!",
+  "user_greeting": "أهلاً بك {{firstName}} {{lastName}} 👋"
+}
