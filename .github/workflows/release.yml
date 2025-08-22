@@ -22,10 +22,12 @@ jobs:
           node-version: 18
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
-      - name: Build App
-        run: npm run dist
+      - name: Build Electron App
+        run: |
+          echo "VITE_BUILD_TARGET=electron" >> $GITHUB_ENV
+          npm run dist
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          BUILD_TARGET: electron
+          NODE_ENV: production

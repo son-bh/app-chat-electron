@@ -1,3 +1,4 @@
+import { IS_WEB } from "./src/shared/constants/common";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import svgr from "vite-plugin-svgr";
@@ -14,8 +15,6 @@ const navigateFallbackAllowlist = Object.values(PATH_NAME).map((route) => {
   return new RegExp(`^${route.replace(/\//g, "\\/")}`);
 });
 
-const isElectron = process.env.BUILD_TARGET === "electron";
-
 // https://vite.dev/config/
 export default defineConfig({
   base: "./",
@@ -29,7 +28,7 @@ export default defineConfig({
         namedExport: "ReactComponent",
       },
     }),
-    !isElectron &&
+    IS_WEB &&
       VitePWA({
         registerType: "autoUpdate",
         filename: "sw.js",
