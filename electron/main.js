@@ -6,6 +6,7 @@ const {
   Menu,
   MenuItem,
 } = require("electron/main");
+const { autoUpdater } = require("electron-updater");
 const path = require("path");
 
 let mainWindow;
@@ -28,10 +29,10 @@ function createWindow() {
       .catch((err) => console.error("Failed to load dev server:", err));
   } else {
     // Prod: Load Vite build
-    const prodPath = path.join(__dirname, "dist/index.html");
-    console.log("Loading production file:", prodPath);
+    const indexPath = path.join(__dirname, "../dist/index.html");
+    console.log("Loading production file:", indexPath);
     mainWindow
-      .loadFile(prodPath)
+      .loadFile(`file://${indexPath}`)
       .catch((err) => console.error("Failed to load prod file:", err));
   }
 
@@ -53,6 +54,12 @@ function createWindow() {
 
 app.whenReady().then(createWindow);
 
+app.on("ready", () => {
+  createWindow();
+
+  autoUpdater.checkForUpdatesAndNotify();
+});
+
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
 });
@@ -72,4 +79,12 @@ ipcMain.on("show-notification", (event, payload) => {
   });
 
   notification.show();
+});
+
+autoUpdater.on("update-available", () => {
+  console.log("Update available. Downloading...");
+});
+
+autoUpdater.on("update-downloaded", () => {
+  console.log("Update downloaded; will install on quit.");
 });
