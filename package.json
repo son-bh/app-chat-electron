@@ -80,6 +80,7 @@
     "classnames": "^2.5.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "electron-updater": "^6.6.2",
     "flatpickr": "^4.6.13",
     "framer-motion": "^12.23.12",
     "i18next": "^25.0.1",
