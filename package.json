@@ -41,13 +41,8 @@
       "target": [
         "dmg",
         "zip"
-      ]
-    },
-    "linux": {
-      "target": [
-        "AppImage",
-        "deb"
-      ]
+      ],
+      "sign": false
     },
     "publish": [
       {
