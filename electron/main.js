@@ -6,6 +6,7 @@ const {
   Menu,
   MenuItem,
 } = require("electron/main");
+const { autoUpdater } = require("electron-updater");
 
 const path = require("path");
 
@@ -74,3 +75,5 @@ ipcMain.on("show-notification", (event, payload) => {
 
   notification.show();
 });
+
+autoUpdater.checkForUpdatesAndNotify();
