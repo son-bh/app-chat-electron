@@ -55,6 +55,12 @@ function createWindow() {
 
 app.whenReady().then(createWindow);
 
+app.on("ready", () => {
+  createWindow();
+
+  autoUpdater.checkForUpdatesAndNotify();
+});
+
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
 });
@@ -76,4 +82,10 @@ ipcMain.on("show-notification", (event, payload) => {
   notification.show();
 });
 
-autoUpdater.checkForUpdatesAndNotify();
+autoUpdater.on("update-available", () => {
+  console.log("Update available. Downloading...");
+});
+
+autoUpdater.on("update-downloaded", () => {
+  console.log("Update downloaded; will install on quit.");
+});

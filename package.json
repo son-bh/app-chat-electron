@@ -26,7 +26,9 @@
     "productName": "MyChatApp",
     "files": [
       "dist/**/*",
-      "electron/**/*"
+      "electron/**/*",
+      "node_modules/**/*",
+      "package.json"
     ],
     "directories": {
       "buildResources": "assets"
@@ -46,7 +48,9 @@
     },
     "publish": [
       {
-        "provider": "github"
+        "provider": "github",
+        "owner": "son-bh",
+        "repo": "app-chat-electron"
       }
     ]
   },
