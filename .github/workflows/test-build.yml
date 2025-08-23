@@ -32,7 +32,7 @@ jobs:
           BUILD_TARGET: electron
           VITE_API_URL: https://hr-api-3005.go9.me
 
-      - name: Verify build output
+      - name: Check build output
         run: |
           echo "Checking build output..."
           if [ -f "dist/index.html" ]; then
@@ -49,3 +49,4 @@ jobs:
             echo "❌ assets directory not found"
             exit 1
           fi
+        shell: bash
