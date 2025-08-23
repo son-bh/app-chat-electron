@@ -30,7 +30,7 @@ jobs:
           echo "REACT_APP_BUILD_TARGET=production" >> $GITHUB_ENV
 
       - name: Build Electron App
-        run: npm run electron-build
+        run: npm run dist
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           NODE_ENV: production
