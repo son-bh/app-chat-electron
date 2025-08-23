@@ -79,31 +79,31 @@ jobs:
           echo "Build artifacts:"
           ls -la dist/
           echo "All files in dist directory:"
-          find dist/ -type f -name "*.exe" -o -name "*.dmg" -o -name "*.zip" | head -20
+          find dist/ -type f \( -name "*.exe" -o -name "*.dmg" -o -name "*.zip" \) | head -20
           echo "Looking for specific files:"
           echo "Checking for MyChatApp Setup files:"
-          SETUP_FILES=$(find dist/ -name "*MyChatApp*Setup*" -type f)
+          SETUP_FILES=$(find dist/ -name "*MyChatApp*Setup*" -type f 2>/dev/null || true)
           if [ -n "$SETUP_FILES" ]; then
             echo "Found Setup files: $SETUP_FILES"
           else
             echo "No Setup files found (this is normal for macOS builds)"
           fi
           echo "Checking for MyChatApp portable files:"
-          PORTABLE_FILES=$(find dist/ -name "*MyChatApp*.exe" -type f | grep -v Setup)
+          PORTABLE_FILES=$(find dist/ -name "*MyChatApp*.exe" -type f 2>/dev/null | grep -v Setup 2>/dev/null || true)
           if [ -n "$PORTABLE_FILES" ]; then
             echo "Found portable files: $PORTABLE_FILES"
           else
             echo "No portable files found (this is normal for macOS builds)"
           fi
           echo "Checking for DMG files:"
-          DMG_FILES=$(find dist/ -name "*.dmg" -type f)
+          DMG_FILES=$(find dist/ -name "*.dmg" -type f 2>/dev/null || true)
           if [ -n "$DMG_FILES" ]; then
             echo "Found DMG files: $DMG_FILES"
           else
             echo "No DMG files found (this is normal for Windows builds)"
           fi
           echo "Checking for ZIP files:"
-          ZIP_FILES=$(find dist/ -name "*.zip" -type f)
+          ZIP_FILES=$(find dist/ -name "*.zip" -type f 2>/dev/null || true)
           if [ -n "$ZIP_FILES" ]; then
             echo "Found ZIP files: $ZIP_FILES"
           else
@@ -113,13 +113,14 @@ jobs:
             echo "Windows unpacked contents:"
             ls -la dist/win-unpacked/
           fi
+          echo "✅ Build artifacts listing completed successfully"
         shell: bash
 
       - name: Find and Upload Windows Assets
         if: matrix.os == 'windows-latest'
         run: |
           echo "Finding Windows setup installer..."
-          SETUP_FILE=$(find dist/ -name "*MyChatApp*Setup*.exe" -type f | head -1)
+          SETUP_FILE=$(find dist/ -name "*MyChatApp*Setup*.exe" -type f 2>/dev/null | head -1)
           if [ -n "$SETUP_FILE" ]; then
             echo "Found setup file: $SETUP_FILE"
             echo "Uploading as: MyChatApp-Setup-${{ github.ref_name }}-Windows.exe"
@@ -138,11 +139,11 @@ jobs:
             fi
           else
             echo "No setup file found!"
-            find dist/ -name "*.exe" -type f
+            find dist/ -name "*.exe" -type f 2>/dev/null || true
           fi
           
           echo "Finding Windows portable..."
-          PORTABLE_FILE=$(find dist/ -name "*MyChatApp*.exe" -type f | grep -v Setup | head -1)
+          PORTABLE_FILE=$(find dist/ -name "*MyChatApp*.exe" -type f 2>/dev/null | grep -v Setup 2>/dev/null | head -1)
           if [ -n "$PORTABLE_FILE" ]; then
             echo "Found portable file: $PORTABLE_FILE"
             echo "Uploading as: MyChatApp-${{ github.ref_name }}-Windows-Portable.exe"
@@ -161,7 +162,7 @@ jobs:
             fi
           else
             echo "No portable file found!"
-            find dist/ -name "*.exe" -type f
+            find dist/ -name "*.exe" -type f 2>/dev/null || true
           fi
         shell: bash
 
@@ -169,7 +170,7 @@ jobs:
         if: matrix.os == 'macos-latest'
         run: |
           echo "Finding macOS DMG..."
-          DMG_FILE=$(find dist/ -name "*.dmg" -type f | head -1)
+          DMG_FILE=$(find dist/ -name "*.dmg" -type f 2>/dev/null | head -1)
           if [ -n "$DMG_FILE" ]; then
             echo "Found DMG file: $DMG_FILE"
             echo "Uploading as: MyChatApp-${{ github.ref_name }}-macOS.dmg"
@@ -188,11 +189,11 @@ jobs:
             fi
           else
             echo "No DMG file found!"
-            find dist/ -name "*.dmg" -type f
+            find dist/ -name "*.dmg" -type f 2>/dev/null || true
           fi
           
           echo "Finding macOS ZIP..."
-          ZIP_FILE=$(find dist/ -name "*.zip" -type f | head -1)
+          ZIP_FILE=$(find dist/ -name "*.zip" -type f 2>/dev/null | head -1)
           if [ -n "$ZIP_FILE" ]; then
             echo "Found ZIP file: $ZIP_FILE"
             echo "Uploading as: MyChatApp-${{ github.ref_name }}-macOS.zip"
@@ -211,6 +212,6 @@ jobs:
             fi
           else
             echo "No ZIP file found!"
-            find dist/ -name "*.zip" -type f
+            find dist/ -name "*.zip" -type f 2>/dev/null || true
           fi
         shell: bash
