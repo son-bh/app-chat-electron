@@ -32,7 +32,8 @@ jobs:
     needs: create_release
     strategy:
       matrix:
-        os: [windows-latest, macos-latest]
+        os: [windows-latest]
+        # os: [windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -86,14 +87,14 @@ jobs:
           asset_name: "MyChatApp-Setup-${{ env.VERSION_WITHOUT_V }}-Windows.exe"
           asset_content_type: application/vnd.microsoft.portable-executable
 
-      - name: Upload macOS DMG (.dmg)
-        if: matrix.os == 'macos-latest'
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ needs.create_release.outputs.upload_url }}
-          asset_path: ./dist/MyChatApp-${{ env.VERSION_WITHOUT_V }}.dmg
-          asset_name: MyChatApp-${{ env.VERSION_WITHOUT_V }}-macOS.dmg
-          asset_content_type: application/x-apple-diskimage
+      # - name: Upload macOS DMG (.dmg)
+      #   if: matrix.os == 'macos-latest'
+      #   uses: actions/upload-release-asset@v1
+      #   with:
+      #     upload_url: ${{ needs.create_release.outputs.upload_url }}
+      #     asset_path: ./dist/MyChatApp-${{ env.VERSION_WITHOUT_V }}.dmg
+      #     asset_name: MyChatApp-${{ env.VERSION_WITHOUT_V }}-macOS.dmg
+      #     asset_content_type: application/x-apple-diskimage
 
       # - name: List build artifacts
       #   run: |
