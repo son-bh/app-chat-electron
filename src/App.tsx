@@ -9,6 +9,7 @@ import { useServiceWorkerUpdater } from "./sw-update-listener";
 import { IS_WEB } from "./shared/constants";
 
 export default function App() {
+  console.log("🚀 ~ IS_WEB:", IS_WEB);
   const Router = !IS_WEB ? HashRouter : BrowserRouter;
 
   if (window && navigator.serviceWorker && IS_WEB) {
