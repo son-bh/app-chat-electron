@@ -21,6 +21,8 @@ function createWindow() {
     },
   });
 
+  const indexPath = path.join(__dirname, "dist", "index.html");
+
   if (process.env.ELECTRON_START_URL) {
     // Dev: Load Vite dev server
     console.log("Loading dev server:", process.env.ELECTRON_START_URL);
@@ -29,7 +31,6 @@ function createWindow() {
       .catch((err) => console.error("Failed to load dev server:", err));
   } else {
     // Prod: Load Vite build
-    const indexPath = path.join(__dirname, "../dist/index.html");
     console.log("Loading production file:", indexPath);
     mainWindow
       .loadFile(indexPath)
@@ -52,7 +53,9 @@ function createWindow() {
   );
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  createWindow();
+});
 
 app.on("ready", () => {
   autoUpdater.checkForUpdatesAndNotify();

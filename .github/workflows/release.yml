@@ -27,7 +27,7 @@ jobs:
       - name: Set Environment Variables for Electron
         run: |
           echo "REACT_APP_API_BASE_URL=https://hr-api-3005.go9.me" >> $GITHUB_ENV
-          echo "REACT_APP_BUILD_TARGET=production" >> $GITHUB_ENV
+          echo "REACT_APP_BUILD_TARGET=electron" >> $GITHUB_ENV
 
       - name: Build Electron App
         run: npm run dist

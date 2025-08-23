@@ -1,4 +1,4 @@
-import { BrowserRouter as Router } from "react-router-dom";
+import { BrowserRouter, HashRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
 import { ScrollToTop } from "./components/common/ScrollToTop";
@@ -9,6 +9,8 @@ import { useServiceWorkerUpdater } from "./sw-update-listener";
 import { IS_WEB } from "./shared/constants";
 
 export default function App() {
+  const Router = !IS_WEB ? HashRouter : BrowserRouter;
+
   if (window && navigator.serviceWorker && IS_WEB) {
     useServiceWorkerUpdater();
   }
