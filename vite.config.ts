@@ -17,15 +17,44 @@ const navigateFallbackAllowlist = Object.values(PATH_NAME).map((route) => {
   return new RegExp(`^${route.replace(/\//g, "\\/")}`);
 });
 
+// Simple plugin to handle Electron-specific configurations
+const electronPlugin = () => {
+  return {
+    name: "electron-plugin",
+    config(config: any) {
+      if (isElectron) {
+        // Keep the config simple for Electron builds
+        // config.define = {
+        //   ...config.define,
+        // };
+      }
+      return config;
+    },
+    transformIndexHtml(html: string) {
+      if (isElectron) {
+        const envScript = `
+          <script>
+            window.__ENV__ = ${JSON.stringify({
+              BUILD_TARGET: "electron",
+              API_URL: process.env.VITE_API_URL || process.env.API_URL,
+              VITE_API_URL: process.env.VITE_API_URL,
+            })};
+            globalThis.__ENV__ = window.__ENV__;
+          </script>
+        `;
+        return html.replace("</head>", `${envScript}</head>`);
+      }
+      return html;
+    },
+  };
+};
+
 // https://vite.dev/config/
 export default defineConfig({
   base: "./",
-  define: {
-    "process.env.API_URL": JSON.stringify(process.env.API_URL),
-    "process.env.TINY_API_KEY": JSON.stringify(process.env.TINY_API_KEY),
-    "process.env.BUILD_TARGET": JSON.stringify(process.env.BUILD_TARGET || "web"),
-  },
+  define: {},
   plugins: [
+    electronPlugin(),
     react(),
     svgr({
       svgrOptions: {
@@ -36,40 +65,42 @@ export default defineConfig({
       },
     }),
     // Only include PWA plugin for web builds, not Electron
-    ...(isElectron ? [] : [
-      VitePWA({
-        registerType: "autoUpdate",
-        filename: "sw.js",
-        devOptions: {
-          enabled: true, // enables SW in dev for testing
-        },
-        workbox: {
-          cleanupOutdatedCaches: true,
-          navigateFallback: "/index.html",
-          navigateFallbackAllowlist,
-        },
-        manifest: {
-          name: "HR Admin",
-          short_name: "Admin",
-          start_url: "/",
-          display: "standalone",
-          background_color: "#ffffff",
-          theme_color: "#ffffff",
-          icons: [
-            {
-              src: "/images/logo/logo-icon.svg",
-              sizes: "192x192",
-              type: "image/svg",
+    ...(isElectron
+      ? []
+      : [
+          VitePWA({
+            registerType: "autoUpdate",
+            filename: "sw.js",
+            devOptions: {
+              enabled: true, // enables SW in dev for testing
             },
-            {
-              src: "/images/logo/logo-icon.svg",
-              sizes: "512x512",
-              type: "image/svg",
+            workbox: {
+              cleanupOutdatedCaches: true,
+              navigateFallback: "/index.html",
+              navigateFallbackAllowlist,
             },
-          ],
-        },
-      }),
-    ]),
+            manifest: {
+              name: "HR Admin",
+              short_name: "Admin",
+              start_url: "/",
+              display: "standalone",
+              background_color: "#ffffff",
+              theme_color: "#ffffff",
+              icons: [
+                {
+                  src: "/images/logo/logo-icon.svg",
+                  sizes: "192x192",
+                  type: "image/svg",
+                },
+                {
+                  src: "/images/logo/logo-icon.svg",
+                  sizes: "512x512",
+                  type: "image/svg",
+                },
+              ],
+            },
+          }),
+        ]),
   ],
   server: {
     port: 3001,

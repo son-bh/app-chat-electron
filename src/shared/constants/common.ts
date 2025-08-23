@@ -1,21 +1,90 @@
 import { USER_TEAM, DEVICES, USER_ROLE_SUPER_ADMIN } from "../../configs";
 
+// Safe way to get environment variables
+const getEnvVar = (key: string, fallback: string = ""): string => {
+  // Try window.__ENV__ first (injected by Vite plugin)
+  if (typeof window !== "undefined" && window.__ENV__ && window.__ENV__[key]) {
+    const value = window.__ENV__[key];
+    if (value) return value;
+  }
+
+  // Try global environment object (for Electron builds)
+  if (
+    typeof globalThis !== "undefined" &&
+    (globalThis as any).__ENV__ &&
+    (globalThis as any).__ENV__[key]
+  ) {
+    const value = (globalThis as any).__ENV__[key];
+    if (value) return value;
+  }
+
+  // Try window.process.env (Electron) - this comes from contextBridge
+  if (typeof window !== "undefined" && window.process?.env?.[key]) {
+    return window.process.env[key];
+  }
+
+  // Try import.meta.env (Vite) - only if we're not in Electron
+  if (
+    typeof globalThis === "undefined" ||
+    !(globalThis as any).__ENV__ ||
+    (globalThis as any).__ENV__.BUILD_TARGET !== "electron"
+  ) {
+    if (import.meta.env && import.meta.env[key]) {
+      return import.meta.env[key];
+    }
+  }
+  // Try process.env (Node.js) - only if accessible and not frozen and process is defined
+  if (
+    typeof process !== "undefined" &&
+    process &&
+    process.env &&
+    typeof process.env === "object" &&
+    !Object.isFrozen(process.env) &&
+    process.env[key]
+  ) {
+    return process.env[key];
+  }
+  return fallback;
+};
+
 export const API_BASE_URL =
-  import.meta.env.VITE_API_URL || process.env.API_URL || "";
+  getEnvVar("VITE_API_URL") || getEnvVar("API_URL") || "";
 export const TINY_API_KEY =
-  import.meta.env.VITE_TINY_API_KEY || process.env.TINY_API_KEY || "";
+  getEnvVar("VITE_TINY_API_KEY") || getEnvVar("TINY_API_KEY") || "";
+
 // Check for BUILD_TARGET in multiple places for Electron compatibility
 const getBuildTarget = () => {
-  // Check window.process.env first (for Electron)
-  if (typeof window !== 'undefined' && window.process?.env?.BUILD_TARGET) {
+  // Check global environment object first (for Electron builds)
+  if (
+    typeof globalThis !== "undefined" &&
+    (globalThis as any).__ENV__ &&
+    (globalThis as any).__ENV__.BUILD_TARGET
+  ) {
+    return (globalThis as any).__ENV__.BUILD_TARGET;
+  }
+  // Check window.process.env (for Electron)
+  if (typeof window !== "undefined" && window.process?.env?.BUILD_TARGET) {
     return window.process.env.BUILD_TARGET;
   }
-  // Check import.meta.env (for Vite)
-  if (import.meta.env.VITE_BUILD_TARGET) {
-    return import.meta.env.VITE_BUILD_TARGET;
+  // Check import.meta.env (for Vite) - only if we're not in Electron
+  if (
+    typeof globalThis === "undefined" ||
+    !(globalThis as any).__ENV__ ||
+    (globalThis as any).__ENV__.BUILD_TARGET !== "electron"
+  ) {
+    if (import.meta.env.VITE_BUILD_TARGET) {
+      return import.meta.env.VITE_BUILD_TARGET;
+    }
   }
-  // Check process.env (for Node.js)
-  if (typeof process !== 'undefined' && process.env?.BUILD_TARGET) {
+  // Check process.env (for Node.js) - only if it exists, is accessible, and not frozen and process is defined
+  if (
+    typeof process !== "undefined" &&
+    process &&
+    process.env &&
+    typeof process.env === "object" &&
+    !Object.isFrozen(process.env) &&
+    process.env.BUILD_TARGET
+  ) {
     return process.env.BUILD_TARGET;
   }
   return "";

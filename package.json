@@ -7,7 +7,7 @@
   "type": "commonjs",
   "main": "electron/main.js",
   "scripts": {
-    "dev": "concurrently \"npm run dev:vite\" \"npm run dev:electron\"",
+    "dev": "concurrently \"npm run dev:vite:electron\" \"npm run dev:electron\"",
     "build": "tsc -b && vite build",
     "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
     "lint:fix": "eslint . --ext .ts,.tsx,.js,.jsx --fix",
@@ -16,7 +16,9 @@
     "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md,css,scss}\"",
     "type-check": "tsc --noEmit",
     "prepare": "husky install",
-    "dev:vite": "vite",
+    "dev:vite": "cross-env BUILD_TARGET=web vite",
+    "dev:vite:electron": "cross-env BUILD_TARGET=electron vite",
+    "dev:web": "npm run dev:vite",
     "dev:electron": "wait-on http://localhost:3001 && cross-env ELECTRON_START_URL=http://localhost:3001 electron .",
     "electron-build": "electron-builder",
     "dist": "cross-env BUILD_TARGET=electron npm run build && electron-builder"

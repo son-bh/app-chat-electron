@@ -8,7 +8,14 @@ export function useServiceWorkerUpdater() {
 
   // Only import PWA register when building for web
   try {
-    const { useRegisterSW } = require("virtual:pwa-register/react");
+    // Check if the module is available (not undefined)
+    const pwaModule = require("virtual:pwa-register/react");
+    if (!pwaModule || pwaModule === "undefined") {
+      console.log("PWA register not available for Electron build");
+      return;
+    }
+    
+    const { useRegisterSW } = pwaModule;
     
     const {
       needRefresh: [needRefresh, setNeedRefresh],

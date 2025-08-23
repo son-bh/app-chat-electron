@@ -35,6 +35,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   const [isConnected, setIsConnected] = useState<boolean>(false);
 
   useEffect(() => {
+    console.log("🚀 ~ SocketProvider ~ API_BASE_URL:", API_BASE_URL);
     const newSocket: TypedSocket = io(API_BASE_URL);
 
     newSocket.on("connect", () => {

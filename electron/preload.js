@@ -11,6 +11,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
 // Expose environment variables to renderer
 contextBridge.exposeInMainWorld("process", {
   env: {
-    BUILD_TARGET: "electron"
-  }
+    BUILD_TARGET: "electron",
+    API_URL: process.env.VITE_API_URL || process.env.API_URL,
+    VITE_API_URL: process.env.VITE_API_URL,
+  },
 });
