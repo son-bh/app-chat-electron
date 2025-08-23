@@ -74,13 +74,16 @@ jobs:
           BUILD_TARGET: electron
           VITE_API_URL: https://hr-api-3005.go9.me
 
+      - name: List dist files
+        run: ls -la dist/
+
       - name: Upload Windows Installer (.exe)
         if: matrix.os == 'windows-latest'
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ needs.create_release.outputs.upload_url }}
-          asset_path: ./dist/MyChatApp Setup ${{ env.VERSION_WITHOUT_V }}.exe
-          asset_name: MyChatApp-Setup-${{ env.VERSION_WITHOUT_V }}-Windows.exe
+          asset_path: "./dist/MyChatApp Setup ${{ env.VERSION_WITHOUT_V }}.exe"
+          asset_name: "MyChatApp-Setup-${{ env.VERSION_WITHOUT_V }}-Windows.exe"
           asset_content_type: application/vnd.microsoft.portable-executable
 
       - name: Upload macOS DMG (.dmg)
