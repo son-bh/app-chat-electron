@@ -6,8 +6,16 @@ declare global {
   }
 
   interface Window {
-    electronSocket: any;
-    electron: any;
+    process?: {
+      env?: {
+        BUILD_TARGET?: string;
+      };
+    };
+    electronAPI?: {
+      send: (channel: string, data: any) => void;
+      receive: (channel: string, func: (...args: any[]) => void) => void;
+      showNotification: (payload: any) => void;
+    };
   }
 }
 

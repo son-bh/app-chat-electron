@@ -9,6 +9,9 @@ const {
 const { autoUpdater } = require("electron-updater");
 const path = require("path");
 
+// Set environment variable for Electron build
+process.env.BUILD_TARGET = "electron";
+
 let mainWindow;
 
 function createWindow() {
@@ -18,10 +21,10 @@ function createWindow() {
     height: 700,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"), // optional
+      nodeIntegration: false,
+      contextIsolation: true,
     },
   });
-
-  const indexPath = path.join(__dirname, "dist", "index.html");
 
   if (process.env.ELECTRON_START_URL) {
     // Dev: Load Vite dev server
@@ -31,6 +34,8 @@ function createWindow() {
       .catch((err) => console.error("Failed to load dev server:", err));
   } else {
     // Prod: Load Vite build
+    const indexPath = path.join(__dirname, "..", "dist", "index.html");
+
     console.log("Loading production file:", indexPath);
     mainWindow
       .loadFile(indexPath)

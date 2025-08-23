@@ -6,6 +6,9 @@ import { fileURLToPath } from "url";
 import { VitePWA } from "vite-plugin-pwa";
 import { PATH_NAME } from "./src/configs/pathName";
 
+// Check if building for Electron
+const isElectron = process.env.BUILD_TARGET === "electron";
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -20,7 +23,7 @@ export default defineConfig({
   define: {
     "process.env.API_URL": JSON.stringify(process.env.API_URL),
     "process.env.TINY_API_KEY": JSON.stringify(process.env.TINY_API_KEY),
-    "process.env.BUILD_TARGET": JSON.stringify(process.env.BUILD_TARGET),
+    "process.env.BUILD_TARGET": JSON.stringify(process.env.BUILD_TARGET || "web"),
   },
   plugins: [
     react(),
@@ -32,38 +35,41 @@ export default defineConfig({
         namedExport: "ReactComponent",
       },
     }),
-    VitePWA({
-      registerType: "autoUpdate",
-      filename: "sw.js",
-      devOptions: {
-        enabled: true, // enables SW in dev for testing
-      },
-      workbox: {
-        cleanupOutdatedCaches: true,
-        navigateFallback: "/index.html",
-        navigateFallbackAllowlist,
-      },
-      manifest: {
-        name: "HR Admin",
-        short_name: "Admin",
-        start_url: "/",
-        display: "standalone",
-        background_color: "#ffffff",
-        theme_color: "#ffffff",
-        icons: [
-          {
-            src: "/images/logo/logo-icon.svg",
-            sizes: "192x192",
-            type: "image/svg",
-          },
-          {
-            src: "/images/logo/logo-icon.svg",
-            sizes: "512x512",
-            type: "image/svg",
-          },
-        ],
-      },
-    }),
+    // Only include PWA plugin for web builds, not Electron
+    ...(isElectron ? [] : [
+      VitePWA({
+        registerType: "autoUpdate",
+        filename: "sw.js",
+        devOptions: {
+          enabled: true, // enables SW in dev for testing
+        },
+        workbox: {
+          cleanupOutdatedCaches: true,
+          navigateFallback: "/index.html",
+          navigateFallbackAllowlist,
+        },
+        manifest: {
+          name: "HR Admin",
+          short_name: "Admin",
+          start_url: "/",
+          display: "standalone",
+          background_color: "#ffffff",
+          theme_color: "#ffffff",
+          icons: [
+            {
+              src: "/images/logo/logo-icon.svg",
+              sizes: "192x192",
+              type: "image/svg",
+            },
+            {
+              src: "/images/logo/logo-icon.svg",
+              sizes: "512x512",
+              type: "image/svg",
+            },
+          ],
+        },
+      }),
+    ]),
   ],
   server: {
     port: 3001,

@@ -7,3 +7,10 @@ contextBridge.exposeInMainWorld("electronAPI", {
     ipcRenderer.on(channel, (event, ...args) => func(...args)),
   showNotification: (payload) => ipcRenderer.send("show-notification", payload),
 });
+
+// Expose environment variables to renderer
+contextBridge.exposeInMainWorld("process", {
+  env: {
+    BUILD_TARGET: "electron"
+  }
+});

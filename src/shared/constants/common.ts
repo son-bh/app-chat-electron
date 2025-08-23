@@ -4,8 +4,24 @@ export const API_BASE_URL =
   import.meta.env.VITE_API_URL || process.env.API_URL || "";
 export const TINY_API_KEY =
   import.meta.env.VITE_TINY_API_KEY || process.env.TINY_API_KEY || "";
-export const BUILD_TARGET =
-  import.meta.env.VITE_BUILD_TARGET || process.env.BUILD_TARGET || "";
+// Check for BUILD_TARGET in multiple places for Electron compatibility
+const getBuildTarget = () => {
+  // Check window.process.env first (for Electron)
+  if (typeof window !== 'undefined' && window.process?.env?.BUILD_TARGET) {
+    return window.process.env.BUILD_TARGET;
+  }
+  // Check import.meta.env (for Vite)
+  if (import.meta.env.VITE_BUILD_TARGET) {
+    return import.meta.env.VITE_BUILD_TARGET;
+  }
+  // Check process.env (for Node.js)
+  if (typeof process !== 'undefined' && process.env?.BUILD_TARGET) {
+    return process.env.BUILD_TARGET;
+  }
+  return "";
+};
+
+export const BUILD_TARGET = getBuildTarget();
 
 export const IS_ELECTRON = BUILD_TARGET === "electron";
 export const IS_WEB = BUILD_TARGET === "web";
