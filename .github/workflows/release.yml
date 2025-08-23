@@ -60,6 +60,8 @@ jobs:
           echo "Updating package.json version to ${{ github.ref_name }}"
           npm version ${{ github.ref_name }} --no-git-tag-version
           cat package.json | grep version
+          echo "Version without v prefix: ${GITHUB_REF#refs/tags/}"
+          echo "VERSION_WITHOUT_V=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
       - name: Build Electron App
         run: |
@@ -78,41 +80,69 @@ jobs:
           ls -la dist/
           echo "All files in dist directory:"
           find dist/ -type f -name "*.exe" -o -name "*.dmg" -o -name "*.zip" | head -20
+          echo "Looking for specific files:"
+          echo "Checking for MyChatApp Setup files:"
+          find dist/ -name "*MyChatApp*Setup*" -type f
+          echo "Checking for MyChatApp portable files:"
+          find dist/ -name "*MyChatApp*.exe" -type f | grep -v Setup
+          echo "Checking for DMG files:"
+          find dist/ -name "*.dmg" -type f
           if [ -d "dist/win-unpacked" ]; then
             echo "Windows unpacked contents:"
             ls -la dist/win-unpacked/
           fi
         shell: bash
 
-      - name: Upload Windows Assets
+      - name: Find and Upload Windows Assets
         if: matrix.os == 'windows-latest'
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        with:
-          upload_url: ${{ needs.create_release.outputs.upload_url }}
-          asset_path: ./dist/MyChatApp Setup ${{ github.ref_name }}.exe
-          asset_name: MyChatApp-Setup-${{ github.ref_name }}-Windows.exe
-          asset_content_type: application/octet-stream
+        run: |
+          echo "Finding Windows setup installer..."
+          SETUP_FILE=$(find dist/ -name "*MyChatApp*Setup*.exe" -type f | head -1)
+          if [ -n "$SETUP_FILE" ]; then
+            echo "Found setup file: $SETUP_FILE"
+            echo "Uploading as: MyChatApp-Setup-${{ github.ref_name }}-Windows.exe"
+            # Upload using curl since we found the file
+            curl -X POST \
+              -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
+              -H "Content-Type: application/octet-stream" \
+              --data-binary "@$SETUP_FILE" \
+              "${{ needs.create_release.outputs.upload_url }}?name=MyChatApp-Setup-${{ github.ref_name }}-Windows.exe"
+          else
+            echo "No setup file found!"
+            find dist/ -name "*.exe" -type f
+          fi
+          
+          echo "Finding Windows portable..."
+          PORTABLE_FILE=$(find dist/ -name "*MyChatApp*.exe" -type f | grep -v Setup | head -1)
+          if [ -n "$PORTABLE_FILE" ]; then
+            echo "Found portable file: $PORTABLE_FILE"
+            echo "Uploading as: MyChatApp-${{ github.ref_name }}-Windows-Portable.exe"
+            curl -X POST \
+              -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
+              -H "Content-Type: application/octet-stream" \
+              --data-binary "@$PORTABLE_FILE" \
+              "${{ needs.create_release.outputs.upload_url }}?name=MyChatApp-${{ github.ref_name }}-Windows-Portable.exe"
+          else
+            echo "No portable file found!"
+            find dist/ -name "*.exe" -type f
+          fi
+        shell: bash
 
-      - name: Upload Windows Portable
-        if: matrix.os == 'windows-latest'
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        with:
-          upload_url: ${{ needs.create_release.outputs.upload_url }}
-          asset_path: ./dist/MyChatApp ${{ github.ref_name }}.exe
-          asset_name: MyChatApp-${{ github.ref_name }}-Windows-Portable.exe
-          asset_content_type: application/octet-stream
-
-      - name: Upload macOS Assets
+      - name: Find and Upload macOS Assets
         if: matrix.os == 'macos-latest'
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        with:
-          upload_url: ${{ needs.create_release.outputs.upload_url }}
-          asset_path: ./dist/MyChatApp-${{ github.ref_name }}.dmg
-          asset_name: MyChatApp-${{ github.ref_name }}-macOS.dmg
-          asset_content_type: application/octet-stream
+        run: |
+          echo "Finding macOS DMG..."
+          DMG_FILE=$(find dist/ -name "*.dmg" -type f | head -1)
+          if [ -n "$DMG_FILE" ]; then
+            echo "Found DMG file: $DMG_FILE"
+            echo "Uploading as: MyChatApp-${{ github.ref_name }}-macOS.dmg"
+            curl -X POST \
+              -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
+              -H "Content-Type: application/octet-stream" \
+              --data-binary "@$DMG_FILE" \
+              "${{ needs.create_release.outputs.upload_url }}?name=MyChatApp-${{ github.ref_name }}-macOS.dmg"
+          else
+            echo "No DMG file found!"
+            find dist/ -name "*.dmg" -type f
+          fi
+        shell: bash
