@@ -126,9 +126,10 @@ jobs:
             echo "Uploading as: MyChatApp-Setup-${{ github.ref_name }}-Windows.exe"
             RESPONSE=$(curl -s -w "%{http_code}" -X POST \
               -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
-              -H "Content-Type: application/octet-stream" \
-              --data-binary "@$SETUP_FILE" \
-              "${{ needs.create_release.outputs.upload_url }}?name=MyChatApp-Setup-${{ github.ref_name }}-Windows.exe")
+              -F "name=MyChatApp-Setup-${{ github.ref_name }}-Windows.exe" \
+              -F "label=MyChatApp Setup Installer for Windows" \
+              -F "file=@$SETUP_FILE" \
+              "${{ needs.create_release.outputs.upload_url }}")
             HTTP_CODE="${RESPONSE: -3}"
             echo "Setup upload response code: $HTTP_CODE"
             if [ "$HTTP_CODE" = "201" ]; then
@@ -149,9 +150,10 @@ jobs:
             echo "Uploading as: MyChatApp-${{ github.ref_name }}-Windows-Portable.exe"
             RESPONSE=$(curl -s -w "%{http_code}" -X POST \
               -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
-              -H "Content-Type: application/octet-stream" \
-              --data-binary "@$PORTABLE_FILE" \
-              "${{ needs.create_release.outputs.upload_url }}?name=MyChatApp-${{ github.ref_name }}-Windows-Portable.exe")
+              -F "name=MyChatApp-${{ github.ref_name }}-Windows-Portable.exe" \
+              -F "label=MyChatApp Portable for Windows" \
+              -F "file=@$PORTABLE_FILE" \
+              "${{ needs.create_release.outputs.upload_url }}")
             HTTP_CODE="${RESPONSE: -3}"
             echo "Portable upload response code: $HTTP_CODE"
             if [ "$HTTP_CODE" = "201" ]; then
@@ -176,9 +178,10 @@ jobs:
             echo "Uploading as: MyChatApp-${{ github.ref_name }}-macOS.dmg"
             RESPONSE=$(curl -s -w "%{http_code}" -X POST \
               -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
-              -H "Content-Type: application/octet-stream" \
-              --data-binary "@$DMG_FILE" \
-              "${{ needs.create_release.outputs.upload_url }}?name=MyChatApp-${{ github.ref_name }}-macOS.dmg")
+              -F "name=MyChatApp-${{ github.ref_name }}-macOS.dmg" \
+              -F "label=MyChatApp DMG for macOS" \
+              -F "file=@$DMG_FILE" \
+              "${{ needs.create_release.outputs.upload_url }}")
             HTTP_CODE="${RESPONSE: -3}"
             echo "DMG upload response code: $HTTP_CODE"
             if [ "$HTTP_CODE" = "201" ]; then
@@ -199,9 +202,10 @@ jobs:
             echo "Uploading as: MyChatApp-${{ github.ref_name }}-macOS.zip"
             RESPONSE=$(curl -s -w "%{http_code}" -X POST \
               -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
-              -H "Content-Type: application/octet-stream" \
-              --data-binary "@$ZIP_FILE" \
-              "${{ needs.create_release.outputs.upload_url }}?name=MyChatApp-${{ github.ref_name }}-macOS.zip")
+              -F "name=MyChatApp-${{ github.ref_name }}-macOS.zip" \
+              -F "label=MyChatApp ZIP for macOS" \
+              -F "file=@$ZIP_FILE" \
+              "${{ needs.create_release.outputs.upload_url }}")
             HTTP_CODE="${RESPONSE: -3}"
             echo "ZIP upload response code: $HTTP_CODE"
             if [ "$HTTP_CODE" = "201" ]; then
