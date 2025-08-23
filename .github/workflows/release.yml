@@ -74,6 +74,24 @@ jobs:
           BUILD_TARGET: electron
           VITE_API_URL: https://hr-api-3005.go9.me
 
+      - name: Upload Windows Installer (.exe)
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_path: ./dist/MyChatApp Setup ${GITHUB_REF#refs/tags/}.exe
+          asset_name: MyChatApp-Setup-${{ github.ref_name }}-Windows.exe
+          asset_content_type: application/vnd.microsoft.portable-executable
+
+      - name: Upload macOS DMG (.dmg)
+        if: matrix.os == 'macos-latest'
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_path: ./dist/MyChatApp-${GITHUB_REF#refs/tags/}.dmg
+          asset_name: MyChatApp-${{ github.ref_name }}-macOS.dmg
+          asset_content_type: application/x-apple-diskimage
+
       # - name: List build artifacts
       #   run: |
       #     echo "Build artifacts:"
