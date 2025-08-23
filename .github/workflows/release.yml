@@ -79,8 +79,8 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ needs.create_release.outputs.upload_url }}
-          asset_path: ./dist/MyChatApp Setup ${GITHUB_REF#refs/tags/}.exe
-          asset_name: MyChatApp-Setup-${{ github.ref_name }}-Windows.exe
+          asset_path: ./dist/MyChatApp Setup ${{ env.VERSION_WITHOUT_V }}.exe
+          asset_name: MyChatApp-Setup-${{ env.VERSION_WITHOUT_V }}-Windows.exe
           asset_content_type: application/vnd.microsoft.portable-executable
 
       - name: Upload macOS DMG (.dmg)
@@ -88,8 +88,8 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ needs.create_release.outputs.upload_url }}
-          asset_path: ./dist/MyChatApp-${GITHUB_REF#refs/tags/}.dmg
-          asset_name: MyChatApp-${{ github.ref_name }}-macOS.dmg
+          asset_path: ./dist/MyChatApp-${{ env.VERSION_WITHOUT_V }}.dmg
+          asset_name: MyChatApp-${{ env.VERSION_WITHOUT_V }}-macOS.dmg
           asset_content_type: application/x-apple-diskimage
 
       # - name: List build artifacts
