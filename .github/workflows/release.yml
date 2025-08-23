@@ -74,148 +74,148 @@ jobs:
           BUILD_TARGET: electron
           VITE_API_URL: https://hr-api-3005.go9.me
 
-      - name: List build artifacts
-        run: |
-          echo "Build artifacts:"
-          ls -la dist/
-          echo "All files in dist directory:"
-          find dist/ -type f \( -name "*.exe" -o -name "*.dmg" -o -name "*.zip" \) | head -20
-          echo "Looking for specific files:"
-          echo "Checking for MyChatApp Setup files:"
-          SETUP_FILES=$(find dist/ -name "*MyChatApp*Setup*" -type f 2>/dev/null || true)
-          if [ -n "$SETUP_FILES" ]; then
-            echo "Found Setup files: $SETUP_FILES"
-          else
-            echo "No Setup files found (this is normal for macOS builds)"
-          fi
-          echo "Checking for MyChatApp portable files:"
-          PORTABLE_FILES=$(find dist/ -name "*MyChatApp*.exe" -type f 2>/dev/null | grep -v Setup 2>/dev/null || true)
-          if [ -n "$PORTABLE_FILES" ]; then
-            echo "Found portable files: $PORTABLE_FILES"
-          else
-            echo "No portable files found (this is normal for macOS builds)"
-          fi
-          echo "Checking for DMG files:"
-          DMG_FILES=$(find dist/ -name "*.dmg" -type f 2>/dev/null || true)
-          if [ -n "$DMG_FILES" ]; then
-            echo "Found DMG files: $DMG_FILES"
-          else
-            echo "No DMG files found (this is normal for Windows builds)"
-          fi
-          echo "Checking for ZIP files:"
-          ZIP_FILES=$(find dist/ -name "*.zip" -type f 2>/dev/null || true)
-          if [ -n "$ZIP_FILES" ]; then
-            echo "Found ZIP files: $ZIP_FILES"
-          else
-            echo "No ZIP files found"
-          fi
-          if [ -d "dist/win-unpacked" ]; then
-            echo "Windows unpacked contents:"
-            ls -la dist/win-unpacked/
-          fi
-          echo "✅ Build artifacts listing completed successfully"
-        shell: bash
+      # - name: List build artifacts
+      #   run: |
+      #     echo "Build artifacts:"
+      #     ls -la dist/
+      #     echo "All files in dist directory:"
+      #     find dist/ -type f \( -name "*.exe" -o -name "*.dmg" -o -name "*.zip" \) | head -20
+      #     echo "Looking for specific files:"
+      #     echo "Checking for MyChatApp Setup files:"
+      #     SETUP_FILES=$(find dist/ -name "*MyChatApp*Setup*" -type f 2>/dev/null || true)
+      #     if [ -n "$SETUP_FILES" ]; then
+      #       echo "Found Setup files: $SETUP_FILES"
+      #     else
+      #       echo "No Setup files found (this is normal for macOS builds)"
+      #     fi
+      #     echo "Checking for MyChatApp portable files:"
+      #     PORTABLE_FILES=$(find dist/ -name "*MyChatApp*.exe" -type f 2>/dev/null | grep -v Setup 2>/dev/null || true)
+      #     if [ -n "$PORTABLE_FILES" ]; then
+      #       echo "Found portable files: $PORTABLE_FILES"
+      #     else
+      #       echo "No portable files found (this is normal for macOS builds)"
+      #     fi
+      #     echo "Checking for DMG files:"
+      #     DMG_FILES=$(find dist/ -name "*.dmg" -type f 2>/dev/null || true)
+      #     if [ -n "$DMG_FILES" ]; then
+      #       echo "Found DMG files: $DMG_FILES"
+      #     else
+      #       echo "No DMG files found (this is normal for Windows builds)"
+      #     fi
+      #     echo "Checking for ZIP files:"
+      #     ZIP_FILES=$(find dist/ -name "*.zip" -type f 2>/dev/null || true)
+      #     if [ -n "$ZIP_FILES" ]; then
+      #       echo "Found ZIP files: $ZIP_FILES"
+      #     else
+      #       echo "No ZIP files found"
+      #     fi
+      #     if [ -d "dist/win-unpacked" ]; then
+      #       echo "Windows unpacked contents:"
+      #       ls -la dist/win-unpacked/
+      #     fi
+      #     echo "✅ Build artifacts listing completed successfully"
+      #   shell: bash
 
-      - name: Find and Upload Windows Assets
-        if: matrix.os == 'windows-latest'
-        run: |
-          echo "Finding Windows setup installer..."
-          SETUP_FILE=$(find dist/ -name "*MyChatApp*Setup*.exe" -type f 2>/dev/null | head -1)
-          if [ -n "$SETUP_FILE" ]; then
-            echo "Found setup file: $SETUP_FILE"
-            echo "Uploading as: MyChatApp-Setup-${{ github.ref_name }}-Windows.exe"
-            RESPONSE=$(curl -s -w "%{http_code}" -X POST \
-              -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
-              -F "name=MyChatApp-Setup-${{ github.ref_name }}-Windows.exe" \
-              -F "label=MyChatApp Setup Installer for Windows" \
-              -F "file=@$SETUP_FILE" \
-              "${{ needs.create_release.outputs.upload_url }}")
-            HTTP_CODE="${RESPONSE: -3}"
-            echo "Setup upload response code: $HTTP_CODE"
-            if [ "$HTTP_CODE" = "201" ]; then
-              echo "✅ Setup file uploaded successfully!"
-            else
-              echo "❌ Setup upload failed with code: $HTTP_CODE"
-              echo "Response: ${RESPONSE%???}"
-            fi
-          else
-            echo "No setup file found!"
-            find dist/ -name "*.exe" -type f 2>/dev/null || true
-          fi
-          
-          echo "Finding Windows portable..."
-          PORTABLE_FILE=$(find dist/ -name "*MyChatApp*.exe" -type f 2>/dev/null | grep -v Setup 2>/dev/null | head -1)
-          if [ -n "$PORTABLE_FILE" ]; then
-            echo "Found portable file: $PORTABLE_FILE"
-            echo "Uploading as: MyChatApp-${{ github.ref_name }}-Windows-Portable.exe"
-            RESPONSE=$(curl -s -w "%{http_code}" -X POST \
-              -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
-              -F "name=MyChatApp-${{ github.ref_name }}-Windows-Portable.exe" \
-              -F "label=MyChatApp Portable for Windows" \
-              -F "file=@$PORTABLE_FILE" \
-              "${{ needs.create_release.outputs.upload_url }}")
-            HTTP_CODE="${RESPONSE: -3}"
-            echo "Portable upload response code: $HTTP_CODE"
-            if [ "$HTTP_CODE" = "201" ]; then
-              echo "✅ Portable file uploaded successfully!"
-            else
-              echo "❌ Portable upload failed with code: $HTTP_CODE"
-              echo "Response: ${RESPONSE%???}"
-            fi
-          else
-            echo "No portable file found!"
-            find dist/ -name "*.exe" -type f 2>/dev/null || true
-          fi
-        shell: bash
+      # - name: Find and Upload Windows Assets
+      #   if: matrix.os == 'windows-latest'
+      #   run: |
+      #     echo "Finding Windows setup installer..."
+      #     SETUP_FILE=$(find dist/ -name "*MyChatApp*Setup*.exe" -type f 2>/dev/null | head -1)
+      #     if [ -n "$SETUP_FILE" ]; then
+      #       echo "Found setup file: $SETUP_FILE"
+      #       echo "Uploading as: MyChatApp-Setup-${{ github.ref_name }}-Windows.exe"
+      #       RESPONSE=$(curl -s -w "%{http_code}" -X POST \
+      #         -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
+      #         -F "name=MyChatApp-Setup-${{ github.ref_name }}-Windows.exe" \
+      #         -F "label=MyChatApp Setup Installer for Windows" \
+      #         -F "file=@$SETUP_FILE" \
+      #         "${{ needs.create_release.outputs.upload_url }}")
+      #       HTTP_CODE="${RESPONSE: -3}"
+      #       echo "Setup upload response code: $HTTP_CODE"
+      #       if [ "$HTTP_CODE" = "201" ]; then
+      #         echo "✅ Setup file uploaded successfully!"
+      #       else
+      #         echo "❌ Setup upload failed with code: $HTTP_CODE"
+      #         echo "Response: ${RESPONSE%???}"
+      #       fi
+      #     else
+      #       echo "No setup file found!"
+      #       find dist/ -name "*.exe" -type f 2>/dev/null || true
+      #     fi
 
-      - name: Find and Upload macOS Assets
-        if: matrix.os == 'macos-latest'
-        run: |
-          echo "Finding macOS DMG..."
-          DMG_FILE=$(find dist/ -name "*.dmg" -type f 2>/dev/null | head -1)
-          if [ -n "$DMG_FILE" ]; then
-            echo "Found DMG file: $DMG_FILE"
-            echo "Uploading as: MyChatApp-${{ github.ref_name }}-macOS.dmg"
-            RESPONSE=$(curl -s -w "%{http_code}" -X POST \
-              -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
-              -F "name=MyChatApp-${{ github.ref_name }}-macOS.dmg" \
-              -F "label=MyChatApp DMG for macOS" \
-              -F "file=@$DMG_FILE" \
-              "${{ needs.create_release.outputs.upload_url }}")
-            HTTP_CODE="${RESPONSE: -3}"
-            echo "DMG upload response code: $HTTP_CODE"
-            if [ "$HTTP_CODE" = "201" ]; then
-              echo "✅ DMG file uploaded successfully!"
-            else
-              echo "❌ DMG upload failed with code: $HTTP_CODE"
-              echo "Response: ${RESPONSE%???}"
-            fi
-          else
-            echo "No DMG file found!"
-            find dist/ -name "*.dmg" -type f 2>/dev/null || true
-          fi
-          
-          echo "Finding macOS ZIP..."
-          ZIP_FILE=$(find dist/ -name "*.zip" -type f 2>/dev/null | head -1)
-          if [ -n "$ZIP_FILE" ]; then
-            echo "Found ZIP file: $ZIP_FILE"
-            echo "Uploading as: MyChatApp-${{ github.ref_name }}-macOS.zip"
-            RESPONSE=$(curl -s -w "%{http_code}" -X POST \
-              -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
-              -F "name=MyChatApp-${{ github.ref_name }}-macOS.zip" \
-              -F "label=MyChatApp ZIP for macOS" \
-              -F "file=@$ZIP_FILE" \
-              "${{ needs.create_release.outputs.upload_url }}")
-            HTTP_CODE="${RESPONSE: -3}"
-            echo "ZIP upload response code: $HTTP_CODE"
-            if [ "$HTTP_CODE" = "201" ]; then
-              echo "✅ ZIP file uploaded successfully!"
-            else
-              echo "❌ ZIP upload failed with code: $HTTP_CODE"
-              echo "Response: ${RESPONSE%???}"
-            fi
-          else
-            echo "No ZIP file found!"
-            find dist/ -name "*.zip" -type f 2>/dev/null || true
-          fi
-        shell: bash
+      #     echo "Finding Windows portable..."
+      #     PORTABLE_FILE=$(find dist/ -name "*MyChatApp*.exe" -type f 2>/dev/null | grep -v Setup 2>/dev/null | head -1)
+      #     if [ -n "$PORTABLE_FILE" ]; then
+      #       echo "Found portable file: $PORTABLE_FILE"
+      #       echo "Uploading as: MyChatApp-${{ github.ref_name }}-Windows-Portable.exe"
+      #       RESPONSE=$(curl -s -w "%{http_code}" -X POST \
+      #         -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
+      #         -F "name=MyChatApp-${{ github.ref_name }}-Windows-Portable.exe" \
+      #         -F "label=MyChatApp Portable for Windows" \
+      #         -F "file=@$PORTABLE_FILE" \
+      #         "${{ needs.create_release.outputs.upload_url }}")
+      #       HTTP_CODE="${RESPONSE: -3}"
+      #       echo "Portable upload response code: $HTTP_CODE"
+      #       if [ "$HTTP_CODE" = "201" ]; then
+      #         echo "✅ Portable file uploaded successfully!"
+      #       else
+      #         echo "❌ Portable upload failed with code: $HTTP_CODE"
+      #         echo "Response: ${RESPONSE%???}"
+      #       fi
+      #     else
+      #       echo "No portable file found!"
+      #       find dist/ -name "*.exe" -type f 2>/dev/null || true
+      #     fi
+      #   shell: bash
+
+      # - name: Find and Upload macOS Assets
+      #   if: matrix.os == 'macos-latest'
+      #   run: |
+      #     echo "Finding macOS DMG..."
+      #     DMG_FILE=$(find dist/ -name "*.dmg" -type f 2>/dev/null | head -1)
+      #     if [ -n "$DMG_FILE" ]; then
+      #       echo "Found DMG file: $DMG_FILE"
+      #       echo "Uploading as: MyChatApp-${{ github.ref_name }}-macOS.dmg"
+      #       RESPONSE=$(curl -s -w "%{http_code}" -X POST \
+      #         -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
+      #         -F "name=MyChatApp-${{ github.ref_name }}-macOS.dmg" \
+      #         -F "label=MyChatApp DMG for macOS" \
+      #         -F "file=@$DMG_FILE" \
+      #         "${{ needs.create_release.outputs.upload_url }}")
+      #       HTTP_CODE="${RESPONSE: -3}"
+      #       echo "DMG upload response code: $HTTP_CODE"
+      #       if [ "$HTTP_CODE" = "201" ]; then
+      #         echo "✅ DMG file uploaded successfully!"
+      #       else
+      #         echo "❌ DMG upload failed with code: $HTTP_CODE"
+      #         echo "Response: ${RESPONSE%???}"
+      #       fi
+      #     else
+      #       echo "No DMG file found!"
+      #       find dist/ -name "*.dmg" -type f 2>/dev/null || true
+      #     fi
+
+      #     echo "Finding macOS ZIP..."
+      #     ZIP_FILE=$(find dist/ -name "*.zip" -type f 2>/dev/null | head -1)
+      #     if [ -n "$ZIP_FILE" ]; then
+      #       echo "Found ZIP file: $ZIP_FILE"
+      #       echo "Uploading as: MyChatApp-${{ github.ref_name }}-macOS.zip"
+      #       RESPONSE=$(curl -s -w "%{http_code}" -X POST \
+      #         -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
+      #         -F "name=MyChatApp-${{ github.ref_name }}-macOS.zip" \
+      #         -F "label=MyChatApp ZIP for macOS" \
+      #         -F "file=@$ZIP_FILE" \
+      #         "${{ needs.create_release.outputs.upload_url }}")
+      #       HTTP_CODE="${RESPONSE: -3}"
+      #       echo "ZIP upload response code: $HTTP_CODE"
+      #       if [ "$HTTP_CODE" = "201" ]; then
+      #         echo "✅ ZIP file uploaded successfully!"
+      #       else
+      #         echo "❌ ZIP upload failed with code: $HTTP_CODE"
+      #         echo "Response: ${RESPONSE%???}"
+      #       fi
+      #     else
+      #       echo "No ZIP file found!"
+      #       find dist/ -name "*.zip" -type f 2>/dev/null || true
+      #     fi
+      #   shell: bash
