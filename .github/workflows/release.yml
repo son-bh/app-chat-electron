@@ -101,7 +101,6 @@ jobs:
           if [ -n "$SETUP_FILE" ]; then
             echo "Found setup file: $SETUP_FILE"
             echo "Uploading as: MyChatApp-Setup-${{ github.ref_name }}-Windows.exe"
-            # Upload using curl since we found the file
             curl -X POST \
               -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
               -H "Content-Type: application/octet-stream" \
@@ -136,13 +135,44 @@ jobs:
           if [ -n "$DMG_FILE" ]; then
             echo "Found DMG file: $DMG_FILE"
             echo "Uploading as: MyChatApp-${{ github.ref_name }}-macOS.dmg"
-            curl -X POST \
+            RESPONSE=$(curl -s -w "%{http_code}" -X POST \
               -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
               -H "Content-Type: application/octet-stream" \
               --data-binary "@$DMG_FILE" \
-              "${{ needs.create_release.outputs.upload_url }}?name=MyChatApp-${{ github.ref_name }}-macOS.dmg"
+              "${{ needs.create_release.outputs.upload_url }}?name=MyChatApp-${{ github.ref_name }}-macOS.dmg")
+            HTTP_CODE="${RESPONSE: -3}"
+            echo "DMG upload response code: $HTTP_CODE"
+            if [ "$HTTP_CODE" = "201" ]; then
+              echo "✅ DMG file uploaded successfully!"
+            else
+              echo "❌ DMG upload failed with code: $HTTP_CODE"
+              echo "Response: ${RESPONSE%???}"
+            fi
           else
             echo "No DMG file found!"
             find dist/ -name "*.dmg" -type f
+          fi
+          
+          echo "Finding macOS ZIP..."
+          ZIP_FILE=$(find dist/ -name "*.zip" -type f | head -1)
+          if [ -n "$ZIP_FILE" ]; then
+            echo "Found ZIP file: $ZIP_FILE"
+            echo "Uploading as: MyChatApp-${{ github.ref_name }}-macOS.zip"
+            RESPONSE=$(curl -s -w "%{http_code}" -X POST \
+              -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
+              -H "Content-Type: application/octet-stream" \
+              --data-binary "@$ZIP_FILE" \
+              "${{ needs.create_release.outputs.upload_url }}?name=MyChatApp-${{ github.ref_name }}-macOS.zip")
+            HTTP_CODE="${RESPONSE: -3}"
+            echo "ZIP upload response code: $HTTP_CODE"
+            if [ "$HTTP_CODE" = "201" ]; then
+              echo "✅ ZIP file uploaded successfully!"
+            else
+              echo "❌ ZIP upload failed with code: $HTTP_CODE"
+              echo "Response: ${RESPONSE%???}"
+            fi
+          else
+            echo "No ZIP file found!"
+            find dist/ -name "*.zip" -type f
           fi
         shell: bash
