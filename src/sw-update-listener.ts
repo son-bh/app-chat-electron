@@ -1,19 +1,10 @@
 import { useEffect } from "react";
+import { useRegisterSW } from "virtual:pwa-register/react";
 import { IS_WEB } from "./shared/constants";
 
-// Only import when running in web
-let useRegisterSW:
-  | typeof import("virtual:pwa-register/react").useRegisterSW
-  | null = null;
-
-if (IS_WEB) {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  useRegisterSW = require("virtual:pwa-register/react").useRegisterSW;
-}
-
 export function useServiceWorkerUpdater() {
-  if (!IS_WEB || !useRegisterSW) {
-    return; // Skip service worker in Electron
+  if (!IS_WEB) {
+    return;
   }
 
   const {

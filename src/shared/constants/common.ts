@@ -1,12 +1,8 @@
-import { DEVICES } from "@/configs/devices";
-import { USER_TEAM } from "../../configs";
-import { USER_ROLE_SUPER_ADMIN } from "@/configs/userRole";
-
-export type BuildTarget = "electron" | "web";
+import { USER_TEAM, DEVICES, USER_ROLE_SUPER_ADMIN } from "../../configs";
 
 export const API_BASE_URL = import.meta.env.VITE_API_URL || "";
 export const TINY_API_KEY = import.meta.env.VITE_TINY_API_KEY || "";
-export const BUILD_TARGET = import.meta.env.VITE_BUILD_TARGET as BuildTarget;
+export const BUILD_TARGET = import.meta.env.VITE_BUILD_TARGET || "";
 
 export const IS_ELECTRON = BUILD_TARGET === "electron";
 export const IS_WEB = BUILD_TARGET === "web";

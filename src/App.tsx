@@ -6,9 +6,12 @@ import Routes from "./routes/Routes";
 import PageMeta from "./components/common/PageMeta";
 // import { useDeployVersionCheck } from './hooks/useDeployVersionCheck';
 import { useServiceWorkerUpdater } from "./sw-update-listener";
+import { IS_WEB } from "./shared/constants";
 
 export default function App() {
-  useServiceWorkerUpdater();
+  if (window && navigator.serviceWorker && IS_WEB) {
+    useServiceWorkerUpdater();
+  }
 
   return (
     <>

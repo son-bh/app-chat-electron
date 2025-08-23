@@ -1,7 +1,7 @@
 /// <reference types="vite/client" />
 
-declare module 'virtual:pwa-register/react' {
-  import type { Dispatch, SetStateAction } from 'react';
+declare module "virtual:pwa-register/react" {
+  import type { Dispatch, SetStateAction } from "react";
 
   export interface RegisterSWOptions {
     immediate?: boolean;

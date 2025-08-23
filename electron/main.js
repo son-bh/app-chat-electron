@@ -55,8 +55,6 @@ function createWindow() {
 app.whenReady().then(createWindow);
 
 app.on("ready", () => {
-  createWindow();
-
   autoUpdater.checkForUpdatesAndNotify();
 });
 

@@ -1,4 +1,3 @@
-import { IS_WEB } from "./src/shared/constants/common";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import svgr from "vite-plugin-svgr";
@@ -28,40 +27,39 @@ export default defineConfig({
         namedExport: "ReactComponent",
       },
     }),
-    IS_WEB &&
-      VitePWA({
-        registerType: "autoUpdate",
-        filename: "sw.js",
-        devOptions: {
-          enabled: true, // enables SW in dev for testing
-        },
-        workbox: {
-          cleanupOutdatedCaches: true,
-          navigateFallback: "/index.html",
-          navigateFallbackAllowlist,
-        },
-        manifest: {
-          name: "HR Admin",
-          short_name: "Admin",
-          start_url: "/",
-          display: "standalone",
-          background_color: "#ffffff",
-          theme_color: "#ffffff",
-          icons: [
-            {
-              src: "/images/logo/logo-icon.svg",
-              sizes: "192x192",
-              type: "image/svg",
-            },
-            {
-              src: "/images/logo/logo-icon.svg",
-              sizes: "512x512",
-              type: "image/svg",
-            },
-          ],
-        },
-      }),
-  ].filter(Boolean),
+    VitePWA({
+      registerType: "autoUpdate",
+      filename: "sw.js",
+      devOptions: {
+        enabled: true, // enables SW in dev for testing
+      },
+      workbox: {
+        cleanupOutdatedCaches: true,
+        navigateFallback: "/index.html",
+        navigateFallbackAllowlist,
+      },
+      manifest: {
+        name: "HR Admin",
+        short_name: "Admin",
+        start_url: "/",
+        display: "standalone",
+        background_color: "#ffffff",
+        theme_color: "#ffffff",
+        icons: [
+          {
+            src: "/images/logo/logo-icon.svg",
+            sizes: "192x192",
+            type: "image/svg",
+          },
+          {
+            src: "/images/logo/logo-icon.svg",
+            sizes: "512x512",
+            type: "image/svg",
+          },
+        ],
+      },
+    }),
+  ],
   server: {
     port: 3001,
   },
