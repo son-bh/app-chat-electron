@@ -17,6 +17,11 @@ const navigateFallbackAllowlist = Object.values(PATH_NAME).map((route) => {
 // https://vite.dev/config/
 export default defineConfig({
   base: "./",
+  define: {
+    "process.env.API_URL": JSON.stringify(process.env.API_URL),
+    "process.env.TINY_API_KEY": JSON.stringify(process.env.TINY_API_KEY),
+    "process.env.BUILD_TARGET": JSON.stringify(process.env.BUILD_TARGET),
+  },
   plugins: [
     react(),
     svgr({

@@ -19,15 +19,18 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 20
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Build Electron App
+      - name: Set Environment Variables for Electron
         run: |
-          echo "VITE_BUILD_TARGET=electron" >> $GITHUB_ENV
-          npm run dist
+          echo "REACT_APP_API_BASE_URL=https://hr-api-3005.go9.me" >> $GITHUB_ENV
+          echo "REACT_APP_BUILD_TARGET=production" >> $GITHUB_ENV
+
+      - name: Build Electron App
+        run: npm electron-build
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           NODE_ENV: production

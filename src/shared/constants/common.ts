@@ -1,8 +1,11 @@
 import { USER_TEAM, DEVICES, USER_ROLE_SUPER_ADMIN } from "../../configs";
 
-export const API_BASE_URL = import.meta.env.VITE_API_URL || "";
-export const TINY_API_KEY = import.meta.env.VITE_TINY_API_KEY || "";
-export const BUILD_TARGET = import.meta.env.VITE_BUILD_TARGET || "";
+export const API_BASE_URL =
+  import.meta.env.VITE_API_URL || process.env.API_URL || "";
+export const TINY_API_KEY =
+  import.meta.env.VITE_TINY_API_KEY || process.env.TINY_API_KEY || "";
+export const BUILD_TARGET =
+  import.meta.env.VITE_BUILD_TARGET || process.env.BUILD_TARGET || "";
 
 export const IS_ELECTRON = BUILD_TARGET === "electron";
 export const IS_WEB = BUILD_TARGET === "web";
