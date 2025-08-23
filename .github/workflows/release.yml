@@ -74,6 +74,7 @@ jobs:
             echo "Windows unpacked contents:"
             ls -la dist/win-unpacked/
           fi
+        shell: bash
 
       - name: Upload Windows Assets
         if: matrix.os == 'windows-latest'
