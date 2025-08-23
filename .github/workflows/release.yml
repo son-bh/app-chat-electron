@@ -76,35 +76,35 @@ jobs:
           fi
         shell: bash
 
-      - name: Upload Windows Assets
-        if: matrix.os == 'windows-latest'
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        with:
-          upload_url: ${{ needs.create_release.outputs.upload_url }}
-          asset_path: ./dist/MyChatApp Setup ${{ github.ref_name }}.exe
-          asset_name: MyChatApp-Setup-${{ github.ref_name }}-Windows.exe
-          asset_content_type: application/octet-stream
+      # - name: Upload Windows Assets
+      #   if: matrix.os == 'windows-latest'
+      #   uses: actions/upload-release-asset@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      #   with:
+      #     upload_url: ${{ needs.create_release.outputs.upload_url }}
+      #     asset_path: ./dist/MyChatApp Setup ${{ github.ref_name }}.exe
+      #     asset_name: MyChatApp-Setup-${{ github.ref_name }}-Windows.exe
+      #     asset_content_type: application/octet-stream
 
-      - name: Upload Windows Portable
-        if: matrix.os == 'windows-latest'
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        with:
-          upload_url: ${{ needs.create_release.outputs.upload_url }}
-          asset_path: ./dist/MyChatApp ${{ github.ref_name }}.exe
-          asset_name: MyChatApp-${{ github.ref_name }}-Windows-Portable.exe
-          asset_content_type: application/octet-stream
+      # - name: Upload Windows Portable
+      #   if: matrix.os == 'windows-latest'
+      #   uses: actions/upload-release-asset@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      #   with:
+      #     upload_url: ${{ needs.create_release.outputs.upload_url }}
+      #     asset_path: ./dist/MyChatApp ${{ github.ref_name }}.exe
+      #     asset_name: MyChatApp-${{ github.ref_name }}-Windows-Portable.exe
+      #     asset_content_type: application/octet-stream
 
-      - name: Upload macOS Assets
-        if: matrix.os == 'macos-latest'
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        with:
-          upload_url: ${{ needs.create_release.outputs.upload_url }}
-          asset_path: ./dist/MyChatApp-${{ github.ref_name }}.dmg
-          asset_name: MyChatApp-${{ github.ref_name }}-macOS.dmg
-          asset_content_type: application/octet-stream
+      # - name: Upload macOS Assets
+      #   if: matrix.os == 'macos-latest'
+      #   uses: actions/upload-release-asset@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      #   with:
+      #     upload_url: ${{ needs.create_release.outputs.upload_url }}
+      #     asset_path: ./dist/MyChatApp-${{ github.ref_name }}.dmg
+      #     asset_name: MyChatApp-${{ github.ref_name }}-macOS.dmg
+      #     asset_content_type: application/octet-stream
