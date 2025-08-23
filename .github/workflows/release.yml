@@ -55,6 +55,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
+      - name: Update package.json version
+        run: |
+          echo "Updating package.json version to ${{ github.ref_name }}"
+          npm version ${{ github.ref_name }} --no-git-tag-version
+          cat package.json | grep version
+
       - name: Build Electron App
         run: |
           echo "Building Electron app with BUILD_TARGET=electron"
@@ -70,6 +76,8 @@ jobs:
         run: |
           echo "Build artifacts:"
           ls -la dist/
+          echo "All files in dist directory:"
+          find dist/ -type f -name "*.exe" -o -name "*.dmg" -o -name "*.zip" | head -20
           if [ -d "dist/win-unpacked" ]; then
             echo "Windows unpacked contents:"
             ls -la dist/win-unpacked/
