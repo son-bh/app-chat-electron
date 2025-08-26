@@ -1,5 +1,9 @@
 name: Build & Release
 
+defaults:
+  run:
+    shell: bash
+
 on:
   push:
     tags:
@@ -60,10 +64,14 @@ jobs:
         run: |
           echo "Updating package.json version to ${{ github.ref_name }}"
           TAG="${{ github.ref_name }}"
-          VERSION="${TAG#v}"
-          npm version ${{ github.ref_name }} --no-git-tag-version
-          cat package.json | grep version
-          echo "Version without v prefix: $VERSION"
+          if [[ "$TAG" == v* ]]; then
+            VERSION="${TAG#v}"
+          else
+            VERSION="$TAG"
+          fi
+          echo "Resolved version: $VERSION"
+          npm version "$VERSION" --no-git-tag-version
+          grep version package.json
           echo "VERSION_WITHOUT_V=$VERSION" >> $GITHUB_ENV
 
       - name: Build Electron App
@@ -79,7 +87,6 @@ jobs:
 
       - name: List dist files
         run: ls -la dist/
-        shell: bash
 
       - name: Upload Windows Installer (.exe)
         if: matrix.os == 'windows-latest'
