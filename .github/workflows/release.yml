@@ -91,6 +91,8 @@ jobs:
       - name: Upload Windows Installer (.exe)
         if: matrix.os == 'windows-latest'
         uses: actions/upload-release-asset@v1
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create_release.outputs.upload_url }}
           asset_path: "./dist/MyChatApp Setup ${{ env.VERSION_WITHOUT_V }}.exe"
