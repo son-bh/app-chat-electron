@@ -1,5 +1,8 @@
 name: Build & Release
 
+permissions:
+  contents: write
+
 defaults:
   run:
     shell: bash
@@ -22,7 +25,7 @@ jobs:
         id: create_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
