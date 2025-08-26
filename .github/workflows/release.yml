@@ -59,7 +59,7 @@ jobs:
       - name: Update package.json version
         run: |
           echo "Updating package.json version to ${{ github.ref_name }}"
-          TAG="${GITHUB_REF_NAME:-${{ github.ref_name }}}"
+          TAG="${{ github.ref_name }}"
           VERSION="${TAG#v}"
           npm version ${{ github.ref_name }} --no-git-tag-version
           cat package.json | grep version
